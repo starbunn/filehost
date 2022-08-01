@@ -1,6 +1,3 @@
 [workspace]
 
-members = [
-    "file-api",
-    "frontend"
-]
+members = ["file-api", "frontend"]
