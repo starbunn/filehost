@@ -37,39 +37,50 @@ async fn main() {
             RequestType::Content => {
                 let path = res.path.replace("..", "");
                 let response = fs::read_to_string(path);
-                if response.is_ok() {
-                    response.unwrap()
-                } else {
-                    "file not found".to_string()
+                match response {
+                    Ok(metadata) => metadata,
+                    Err(_) => "File Not Found".to_string(),
                 }
             }
             RequestType::DateCreated => {
                 let path = res.path.replace("..", "");
                 let response = fs::metadata(path);
-                if response.is_ok() {
-                    let datetime: DateTime<Utc> = response.unwrap().created().unwrap().into();
-                    format!("{}", datetime.format("%d/%m/%Y %T"))
-                } else {
-                    "ERR".to_string()
+
+                match response {
+                    Ok(metadata) => {
+                        if metadata.created().is_ok() {
+                            let datetime: DateTime<Utc> = metadata.created().unwrap().into();
+                            format!("{}", datetime.format("%d/%m/%Y %T"))
+                        } else {
+                            "Unknown".to_string()
+                        }
+                    }
+                    Err(_) => "Unknown".to_string(),
                 }
             }
             RequestType::LastUpdated => {
                 let path = res.path.replace("..", "");
                 let response = fs::metadata(path);
-                if response.is_ok() {
-                    let datetime: DateTime<Utc> = response.unwrap().modified().unwrap().into();
-                    format!("{}", datetime.format("%d/%m/%Y %T"))
-                } else {
-                    "ERR".to_string()
+                match response {
+                    Ok(metadata) => {
+                        if metadata.created().is_ok() {
+                            let datetime: DateTime<Utc> = metadata.modified().unwrap().into();
+                            format!("{}", datetime.format("%d/%m/%Y %T"))
+                        } else {
+                            "Unknown".to_string()
+                        }
+                    }
+                    Err(_) => "Unknown".to_string(),
                 }
             }
             RequestType::Filesize => {
                 let path = res.path.replace("..", "");
                 let response = fs::metadata(path);
-                if response.is_ok() {
-                    format!("{}", response.unwrap().len())
-                } else {
-                    "ERR".to_string()
+                match response {
+                    Ok(metadata) => {
+                        format!("{}", metadata.len())
+                    }
+                    Err(_) => "ERR".to_string(),
                 }
             }
         });
