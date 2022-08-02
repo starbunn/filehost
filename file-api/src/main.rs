@@ -10,6 +10,7 @@ enum RequestType {
     Content,
     DateCreated,
     LastUpdated,
+    Filesize,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -49,7 +50,7 @@ async fn main() {
                     let datetime: DateTime<Utc> = response.unwrap().created().unwrap().into();
                     format!("{}", datetime.format("%d/%m/%Y %T"))
                 } else {
-                    "NONE".to_string()
+                    "ERR".to_string()
                 }
             }
             RequestType::LastUpdated => {
@@ -59,7 +60,16 @@ async fn main() {
                     let datetime: DateTime<Utc> = response.unwrap().modified().unwrap().into();
                     format!("{}", datetime.format("%d/%m/%Y %T"))
                 } else {
-                    "NONE".to_string()
+                    "ERR".to_string()
+                }
+            }
+            RequestType::Filesize => {
+                let path = res.path.replace("..", "");
+                let response = fs::metadata(path);
+                if response.is_ok() {
+                    format!("{}", response.unwrap().len())
+                } else {
+                    "ERR".to_string()
                 }
             }
         });
